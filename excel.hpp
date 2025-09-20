@@ -8,8 +8,7 @@ using namespace std;
 
 class MiniExcel
 {
-
-private :
+public:
     class Cell 
     {
     public :
@@ -18,15 +17,13 @@ private :
         Cell * down ;
         Cell * left ;
         Cell * right ;
-        Cell ( char d = '.') : data ( d ) , up ( nullptr ) , down ( nullptr ) ,
-                left ( nullptr ) , right ( nullptr ) {}
-
+        Cell ( char d = ' ');
     };
     Cell * root ;
     Cell * current ;
     int rows ;
     int cols ;
-public:
+
     MiniExcel();
     void insertRowAbove ();
     void insertRowBelow ();
@@ -41,28 +38,52 @@ public:
     void moveLeft ();
     void moveRight ();
 
-    void printSheet ()
+    void printSheet() 
     {
-    Cell * rowPtr = root ;
-    while ( rowPtr != nullptr )
-    {
-    Cell * colPtr = rowPtr ;
-    while ( colPtr != nullptr )
-    {
-    // cout << setw (3) << colPtr - > data << " | ";
-    // colPtr = colPtr - > right ;
+        // Print column headers (A, B, C, ...)
+        cout << "    "; // space for row labels
+        for (int c = 0; c < cols; c++) {
+            cout << "   " << char('A' + c) << "   ";
+        }
+        cout << "\n";
+
+        for (int r = 0; r < rows; r++) {
+            // ┌───┬───┐ top border of row
+            for (int c = 0; c < cols; c++) 
+            {
+                if (c == 0) cout << (r == 0 ? "   ┌" : "   ├");
+                for (int i = 0; i < 6; i++) cout << "─";
+                cout << (c == cols - 1 ? (r == 0 ? "┐" : "┤") : (r == 0 ? "┬" : "┼"));
+            }
+            cout << "\n";
+
+            // Row label (1, 2, 3...)
+            cout << setw(2) << r + 1 << " ";
+
+            // Cell content
+            Cell* rowPtr = root;
+            for (int i = 0; i < r; i++) rowPtr = rowPtr->down;
+
+            Cell* colPtr = rowPtr;
+            for (int c = 0; c < cols; c++) 
+            {
+                cout << "│  " << colPtr->data << "   ";
+                colPtr = colPtr->right;
+                if (c == cols - 1) cout << "│";
+            }
+            cout << "\n";
+        }
+
+        // └───┴───┘ bottom border
+        for (int c = 0; c < cols; c++) 
+        {
+            if (c == 0) cout << "   └";
+            for (int i = 0; i < 6; i++) cout << "─";
+            cout << (c == cols - 1 ? "┘" : "┴");
+        }
+        cout << "\n";
     }
-    cout << endl ;
-    Cell * temp = rowPtr ;
-    while ( temp != nullptr )
-    {
-    cout << " ----";
-    // temp = temp - > right ;
-    }
-    cout << endl ;
-    // rowPtr = rowPtr - > down ;
-    }
-    }   
+
     vector <char> copy (int startRow , int startCol , int endRow , int endCol ) ;
     void paste ( const vector <char >& data , int startRow , int startCol ) ;
 
