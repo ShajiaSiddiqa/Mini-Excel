@@ -1,6 +1,3 @@
-
----
-
 # MiniExcel (Console Spreadsheet)
 
 MiniExcel is a **console-based spreadsheet program** written in C++.
@@ -85,7 +82,7 @@ make
 
 ## Example Run
 
-```
+``` output
      A        B        C
    ┌────────┬────────┬────────┐
  1 │Hello   │        │        │
