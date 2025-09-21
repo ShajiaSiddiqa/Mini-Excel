@@ -1,0 +1,108 @@
+
+---
+
+# MiniExcel (Console Spreadsheet)
+
+MiniExcel is a **console-based spreadsheet program** written in C++.
+It mimics some of the basic features of Excel/Google Sheets, including navigation, editing, row/column insertion, deletion, clearing, and copy-paste.
+
+---
+
+## Data Structure
+
+* The spreadsheet is implemented using a **2D Doubly Linked List**.
+* Each **cell** is a node that stores:
+
+  * The cell’s **data** (string).
+  * Pointers to its **up, down, left, and right** neighbors.
+* This design allows:
+
+  * Easy insertion and deletion of rows/columns anywhere in the sheet.
+  * Navigation in constant time.
+  * A dynamic grid that expands as needed.
+
+---
+
+## Features
+
+* Grid-based spreadsheet structure using a **linked list of cells**.
+* Navigation using **Arrow keys**.
+* Edit cells with custom text.
+* Insert/Delete/Clear rows and columns dynamically.
+* Copy & Paste cell values.
+* Pretty-printed table layout with borders.
+* Always keeps the **top-left corner (root) as (0,0)**.
+
+---
+
+## Controls
+
+* **Navigation**
+
+  * `Arrow Keys` → Move cursor (current cell).
+  * Cursor blinks blue in the current cell.
+
+* **Insert Rows/Columns**
+
+  * `Shift + ↑` → Insert row above.
+  * `Shift + ↓` → Insert row below.
+  * `Shift + →` → Insert column to right.
+  * `Shift + ←` → Insert column to left.
+
+* **Delete / Clear**
+
+  * `w` → Delete current row.
+  * `a` → Delete current column.
+  * `s` → Clear current row (set empty).
+  * `d` → Clear current column (set empty).
+
+* **Editing**
+
+  * `e` → Edit current cell (enter new value).
+
+* **Copy & Paste**
+
+  * `c` → Copy current cell.
+  * `v` → Paste into current cell.
+
+* **Quit**
+
+  * `q` → Exit the program.
+
+---
+
+## Build & Run
+
+This project uses a **Makefile**.
+Simply run:
+
+```bash
+make
+./excel
+```
+
+---
+
+## Example Run
+
+```
+     A        B        C
+   ┌────────┬────────┬────────┐
+ 1 │Hello   │        │        │
+   ├────────┼────────┼────────┤
+ 2 │World   │        │        │
+   └────────┴────────┴────────┘
+```
+
+* Move around with arrows.
+* Insert/Delete rows/cols with Shift+Arrows and `w`/`a`.
+* Edit cells with `e`.
+
+---
+
+## Notes
+
+* Runs on **Linux/MacOS** (uses `termios` for raw input).
+* For **Windows**, `conio.h` or `Windows Console API` would be needed instead of `termios`.
+
+---
