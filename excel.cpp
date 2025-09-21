@@ -120,7 +120,8 @@ void MiniExcel::insertColumnToRight()
 
     cols++;
 }
-void MiniExcel::insertRowAbove() {
+void MiniExcel::insertRowAbove() 
+{
     // Go to first column of current row
     Cell* rowStart = current;
     while (rowStart->left) rowStart = rowStart->left;
@@ -343,64 +344,106 @@ void MiniExcel::editCurrentCell()
     cout << "Editing cell (" << r << "," << c << "): ";
     string value;
     cin >> value;
-    current->data = value;  // store as string if you change data to std::string
+    current->data = value;  
 }
+
+const int MAX_VISIBLE_ROWS = 17;
 
 void MiniExcel::printSheet() 
 {
+    int startRow = 0;
+    int curRow = 0;
+
+    // ------------ Finding current row index
+    Cell* temp = root;
+    while (temp && temp != current) 
+    {
+        Cell* rowPtr = temp;
+        int c = 0;
+        while (rowPtr && rowPtr != current) 
+        {
+            rowPtr = rowPtr->right;
+            c++;
+        }
+        if (rowPtr == current) break;
+        temp = temp->down;
+        curRow++;
+    }
+
+    // Sliding window: if current row is beyond visible range, shifting startRow
+    if (curRow >= MAX_VISIBLE_ROWS) 
+    {
+        startRow = curRow - MAX_VISIBLE_ROWS + 1;
+    }
+
+    int endRow = min(startRow + MAX_VISIBLE_ROWS, rows);
+
     // Print column headers (A, B, C, ...)
-    cout << "    "; // space for row labels
+    cout << "    ";
     for (int c = 0; c < cols; c++) {
         cout << "   " << char('A' + c) << "     ";
     }
     cout << "\n";
 
-    for (int r = 0; r < rows; r++) {
-        // ┌───┬───┐ top border of row
-        for (int c = 0; c < cols; c++) 
+    // Navigate to startRow
+    Cell* rowPtr = root;
+    for (int r = 0; r < startRow; r++) 
         {
-            if (c == 0) cout << (r == 0 ? "   ┌" : "   ├");
-            for (int i = 0; i < 8; i++) cout << "─";
-            cout << (c == cols - 1 ? (r == 0 ? "┐" : "┤") : (r == 0 ? "┬" : "┼"));
+            rowPtr = rowPtr->down;
+        }
+
+    // Print only window rows
+    for (int r = startRow; r < endRow; r++)
+    {
+        // --------- Top/border of row
+        for (int c = 0; c < cols; c++) {
+            if (c == 0) 
+                cout << (r == startRow ? "    ┌" : "    ├");
+            for (int i = 0; i < 8; i++) 
+                cout << "─";
+            cout << (c == cols - 1 ? (r == startRow ? "┐" : "┤") : (r == startRow ? "┬" : "┼"));
         }
         cout << "\n";
 
-        // Row label (1, 2, 3...)
-        cout << setw(2) << r + 1 << " ";
+        // ---------- Row label (1,2,3,... )
+        if (r + 1 < 100)
+            cout << setw(2) << r + 1 << "  ";
+        else
+            cout << setw(2) << r + 1 << " ";
 
-        // Cell content
-        Cell* rowPtr = root;
-        for (int i = 0; i < r; i++) rowPtr = rowPtr->down;
-
+        // ------------- Cursor position and Cell content
         Cell* colPtr = rowPtr;
         for (int c = 0; c < cols; c++) 
         {
-            cout << "│";    
-            if (colPtr == current) {
-            // Highlight current cell with blue text and blinking cursor
-            cout << "\033[34m";            // Blue text
-            cout << setw(8) << left << (colPtr->data + "|"); 
-            cout << "\033[0m";             // Reset color
-        } else {
-            cout << setw(8) << left << colPtr->data;
-        }
-
+            cout << "│";
+            if (colPtr == current) 
+            {
+                cout << "\033[34m";  // blue
+                cout << setw(8) << left << (colPtr->data + "|");
+                cout << "\033[0m";
+            } else 
+            {
+                cout << setw(8) << left << colPtr->data;
+            }
             colPtr = colPtr->right;
-            if (c == cols - 1) cout << "│";  // close last cell
+            if (c == cols - 1) cout << "│";
         }
-
         cout << "\n";
+
+        // Go down for next row
+        rowPtr = rowPtr->down;
     }
 
-    // └───┴───┘ bottom border
+    // Bottom border for window
     for (int c = 0; c < cols; c++) 
     {
-        if (c == 0) cout << "   └";
-        for (int i = 0; i < 8; i++) cout << "─";
+        if (c == 0)
+            cout << "    └";
+        for (int i = 0; i < 8; i++) 
+            cout << "─";
         cout << (c == cols - 1 ? "┘" : "┴");
     }
     cout << "\n";
-    
 }
 
 vector<char> MiniExcel::copy(int startRow, int startCol, int endRow, int endCol) 
